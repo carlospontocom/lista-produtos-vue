@@ -1,7 +1,7 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <HelloWorld />
+  <MiniCrud />
 </template>
+
+<script setup lang="ts">
+import MiniCrud from './components/MiniCrud.vue'
+</script>
