@@ -1,5 +1,40 @@
-# Vue 3 + TypeScript + Vite
+# Mini CRUD de Produtos com Vue.js
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Este é um projeto de um mini CRUD (Create, Read, Update, Delete) de produtos desenvolvido com Vue.js, Vite e TypeScript. A aplicação permite cadastrar, visualizar, editar e excluir produtos, tudo isso com uma interface amigável e responsiva.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## Funcionalidades
+
+- **Cadastro de produtos:** Adicione novos produtos com nome, preço, imagem e descrição.
+- **Visualização de produtos:** Veja a lista de produtos cadastrados em cards.
+- **Edição de produtos:** Edite as informações de um produto existente.
+- **Exclusão de produtos:** Remova produtos da lista.
+
+## Tecnologias Utilizadas
+
+- **Vue.js:** Framework progressivo para a construção de interfaces de usuário.
+- **Vite:** Ferramenta de build que proporciona um desenvolvimento rápido.
+- **TypeScript:** Superset do JavaScript que adiciona tipagem estática.
+
+## Como Executar o Projeto
+
+1.  **Clone o repositório:**
+
+    ```bash
+    git clone https://github.com/seu-usuario/seu-repositorio.git
+    ```
+
+2.  **Instale as dependências:**
+
+    ```bash
+    npm install
+    ```
+
+3.  **Inicie o servidor de desenvolvimento:**
+
+    ```bash
+    npm run dev
+    ```
+
+## Demo
+
+[Link para a demonstração da aplicação](httpshttps://sua-url-de-demo.com)
