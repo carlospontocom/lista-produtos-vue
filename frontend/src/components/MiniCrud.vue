@@ -202,5 +202,5 @@ const moedaBrasil = (valor) => {
 }
 </script>
 <style lang="scss" scoped>
-  @import '../styles/minicrud.scss';
+  @use '../styles/minicrud.scss';
 </style>
