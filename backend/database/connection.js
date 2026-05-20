@@ -5,7 +5,7 @@ dotenv.config();
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT) || 4000, // TiDB geralmente usa 4000
+  port: Number(process.env.DB_PORT) || 4000, 
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
@@ -22,8 +22,8 @@ const pool = mysql.createPool({
 async function testConnection() {
   try {
     const connection = await pool.getConnection();
-    console.log('Conectado com sucesso ao TiDB Cloud (MySQL)!');
-    connection.release(); // Devolve a conexão para o pool
+    console.log('Conectado com sucesso ao TiDB Cloud (MySQL)');
+    connection.release();
   } catch (error) {
     console.error('Erro ao conectar ao banco de dados:', error.message);
   }

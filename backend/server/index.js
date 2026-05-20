@@ -1,44 +1,49 @@
-// server.js
-import express from 'express';
-import { listarProdutos } from '../models/modelProduto.js';
-import cors from 'cors';
+import express from "express";
+import cors from "cors";
+ import UsuarioModel from "../models/usuarioModel.js";
 
+// Importa o arquivo de documentação separado
+ 
 const app = express();
-
-// CORS mais específico para seu ambiente
-app.use(cors({
-  origin: 'https://5173-firebase-vueapi-1778871500827.cluster-lr6dwlc2lzbcctqhqorax5zmro.cloudworkstations.dev',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  credentials: true
-}));
-
 const port = 5000;
 
+app.use(cors());
 app.use(express.json());
+ 
+// ==========================================
+// ROTAS DA API (Sem poluição de comentários)
+// ==========================================
 
-app.get('/produtos', async (req, res) => {
-  // Adicionar headers CORS manualmente como fallback
-  res.header('Access-Control-Allow-Origin', 'https://5173-firebase-vueapi-1778871500827.cluster-lr6dwlc2lzbcctqhqorax5zmro.cloudworkstations.dev');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  
+app.post("/usuarios", async (req, res) => {
   try {
-    const produtos = await listarProdutos();
-    res.json(produtos);
-  } catch(error) {
-    res.status(500).json({error: error.message});
+    const usuario = req.body;
+    const novoUsuario = await UsuarioModel.cadastrarUsuario(usuario);
+    res.status(201).json(novoUsuario);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Adicionar resposta para OPTIONS preflight
-app.options('/produtos', (req, res) => {
-  res.header('Access-Control-Allow-Origin', 'https://5173-firebase-vueapi-1778871500827.cluster-lr6dwlc2lzbcctqhqorax5zmro.cloudworkstations.dev');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.sendStatus(200);
+app.get("/usuarios", async (req, res) => {
+  try {
+    const usuarios = await UsuarioModel.listarUsuarios();
+    res.status(200).json(usuarios);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete("/usuario/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await UsuarioModel.deletarUsuario(id);
+    res.status(200).json("Usuário deletado com sucesso!");
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 app.listen(port, () => {
-  console.log(`Aplicação rodando na porta http://localhost:${port}`);
+  console.log(`Aplicação rodando em http://localhost:${port}`);
+  console.log(`Documentação disponível em http://localhost:${port}/api-docs`);
 });

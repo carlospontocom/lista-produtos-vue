@@ -1,9 +1,14 @@
-<template>
-  <!-- <MiniCrud /> -->
-   <TesteApi/>
+  <template>
+   
+   <Navbar />
+   <router-view/>
+    
+    <!-- <MiniCrud /> -->
+
 </template>
 
 <script setup lang="ts">
-// import MiniCrud from './components/MiniCrud.vue'
-import TesteApi from './components/TesteApi.vue'
+  // import MiniCrud from './components/MiniCrud.vue'
+  import Navbar from './components/Navbar.vue'
+ 
 </script>

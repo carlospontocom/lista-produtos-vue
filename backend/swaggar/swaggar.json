@@ -1,0 +1,87 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Usuários",
+    "version": "1.0.0",
+    "description": "Documentação da API de gerenciamento de usuários"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Servidor Local"
+    }
+  ],
+  "paths": {
+    "/usuarios": {
+      "get": {
+        "summary": "Retorna a lista de usuários",
+        "description": "Retorna um array contendo todos os usuários cadastrados.",
+        "responses": {
+          "200": {
+            "description": "Lista de usuários obtida com sucesso."
+          },
+          "500": {
+            "description": "Erro interno no servidor."
+          }
+        }
+      },
+      "post": {
+        "summary": "Cadastra um novo usuário",
+        "description": "Cria um novo registro de usuário no banco de dados.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "example": "João Silva"
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "joao@email.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário cadastrado com sucesso."
+          },
+          "500": {
+            "description": "Erro interno no servidor."
+          }
+        }
+      }
+    },
+    "/usuario/{id}": {
+      "delete": {
+        "summary": "Exclui um usuário pelo ID",
+        "description": "Remove o registro de um usuário específico utilizando o ID enviado na URL.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID do usuário a ser deletado"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário deletado com sucesso!"
+          },
+          "500": {
+            "description": "Erro interno no servidor."
+          }
+        }
+      }
+    }
+  }
+}
