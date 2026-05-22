@@ -7,7 +7,8 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
+node_modules/
+**/node_modules
 dist
 dist-ssr
 *.local
@@ -25,5 +26,10 @@ dist-ssr
 
 #Variáveis de ambiente
 .env
-.env.local
-.env.production
+**/.env
+node_modules/
+**/node_modules/
+
+# Firebase
+backend/config/firebase-keys.json
+frontend/src/firebase/firebase.js

@@ -7,6 +7,7 @@
         placeholder="Digite nome ou email"
         v-model="nomeFuncionario"
       />
+      <button class="btn-novo" @click="abrirModalCadastro">+ Novo Usuário</button>
     </div>
 
     <div v-if="carregando" class="carregando">Carregando...</div>
@@ -37,13 +38,43 @@
           <p><span>🎂</span> {{ formatarData(usuario.data_nascimento) }}</p>
         </div>
         <div class="badge">ID #{{ usuario.id }}</div>
-        <button class="">
-          <span
-            class="material-symbols-outlined"
-            @click="deletarUsuario(usuario.id)"
-            >delete</span
-          >
-        </button>
+        <div class="acoes">
+          <button class="btn-editar" @click="editarUsuario(usuario)">
+            <span class="material-symbols-outlined">edit</span>
+          </button>
+          <button class="btn-deletar" @click="deletarUsuario(usuario.id_firebase)">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Cadastro/Edição -->
+    <div v-if="modalAberto" class="modal">
+      <div class="modal-content">
+        <h2>{{ modalTitulo }}</h2>
+        <form @submit.prevent="salvarUsuario">
+          <div class="form-group">
+            <label>Nome:</label>
+            <input type="text" v-model="formUsuario.nome" required />
+          </div>
+          <div class="form-group">
+            <label>Email:</label>
+            <input type="email" v-model="formUsuario.email" required />
+          </div>
+          <div class="form-group" v-if="!editando">
+            <label>Senha:</label>
+            <input type="password" v-model="formUsuario.senha" required />
+          </div>
+          <div class="form-group">
+            <label>Data de Nascimento:</label>
+            <input type="date" v-model="formUsuario.data_nascimento" />
+          </div>
+          <div class="modal-acoes">
+            <button type="button" @click="fecharModal">Cancelar</button>
+            <button type="submit">Salvar</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -53,18 +84,34 @@
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
 
+// Estado
 const nomeFuncionario = ref("");
 const usuarios = ref([]);
 const carregando = ref(false);
 const erro = ref(null);
-
-
-const novoUsuario = ref({
+const modalAberto = ref(false);
+const editando = ref(false);
+const formUsuario = ref({
+  id: null,
+  id_firebase: null,
   nome: "",
   email: "",
   senha: "",
+  data_nascimento: ""
 });
 
+// Computed
+const modalTitulo = computed(() => editando.value ? "Editar Usuário" : "Novo Usuário");
+
+const usuariosFiltrados = computed(() => {
+  if (!nomeFuncionario.value.trim()) return usuarios.value;
+  const termo = nomeFuncionario.value.toLowerCase();
+  return usuarios.value.filter((u) =>
+    `${u.nome} ${u.email}`.toLowerCase().includes(termo)
+  );
+});
+
+// Métodos
 const iniciais = (nome) => {
   if (!nome) return "?";
   return nome
@@ -80,14 +127,6 @@ const formatarData = (data) => {
   return new Date(data).toLocaleDateString("pt-BR");
 };
 
-const usuariosFiltrados = computed(() => {
-  if (!nomeFuncionario.value.trim()) return usuarios.value;
-  const termo = nomeFuncionario.value.toLowerCase();
-  return usuarios.value.filter((u) =>
-    `${u.nome} ${u.email}`.toLowerCase().includes(termo),
-  );
-});
-
 const carregarUsuarios = async () => {
   carregando.value = true;
   erro.value = null;
@@ -96,51 +135,107 @@ const carregarUsuarios = async () => {
     usuarios.value = response.data;
   } catch (error) {
     erro.value = error.message;
+    console.error("Erro ao carregar usuários:", error);
   } finally {
     carregando.value = false;
   }
 };
 
-const deletarUsuario = async (id) => {
+const deletarUsuario = async (uid) => {
+  if (!confirm("Tem certeza que deseja deletar este usuário?")) return;
+  
   try {
-    const response = await axios.delete(`http://localhost:5000/usuario/${id}`);
-    if (response.status === 200) {
-      usuarios.value = usuarios.value.filter((u) => u.id !== id);
-    }
-  } catch (e) {
-    erro.value = e.message;
-  }
-};
-
-const cadastrarUsuario = async () => {
-  try {
-    const response = await axios.post('http://localhost:5000/usuarios', {
-      nome: novoUsuario.value.nome,
-      email: novoUsuario.value.email,
-      senha: novoUsuario.value.senha
+    const token = localStorage.getItem("token"); // Pega o token do Firebase
+    const response = await axios.delete(`http://localhost:5000/usuario/${uid}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
-    if (response.status === 201) {
-      usuarios.value.push(response.data);
-      // limpa o formulário
-      novoUsuario.value = { nome: '', email: '', senha: '' };
+    if (response.status === 200) {
+      await carregarUsuarios(); // Recarrega a lista
+      alert("Usuário deletado com sucesso!");
     }
   } catch (e) {
-    erro.value = e.message;
+    erro.value = e.response?.data?.error || e.message;
+    alert("Erro ao deletar: " + erro.value);
   }
 };
 
-const editarUsuario = async (id) => {
- try{
-   const response = await axios.get(`http://localhost:5000/usuario/${id}`);
-  if (response.status === 200) {
-    usuarios.value = response.data;
-  }
- }catch(e){
-  erro.value = e.message;
- }
-}
+const abrirModalCadastro = () => {
+  editando.value = false;
+  formUsuario.value = {
+    id: null,
+    id_firebase: null,
+    nome: "",
+    email: "",
+    senha: "",
+    data_nascimento: ""
+  };
+  modalAberto.value = true;
+};
 
-onMounted(carregarUsuarios);
+const editarUsuario = (usuario) => {
+  editando.value = true;
+  formUsuario.value = {
+    id: usuario.id,
+    id_firebase: usuario.id_firebase,
+    nome: usuario.nome,
+    email: usuario.email,
+    senha: "",
+    data_nascimento: usuario.data_nascimento || ""
+  };
+  modalAberto.value = true;
+};
+
+const salvarUsuario = async () => {
+  try {
+    if (editando.value) {
+      // Atualizar usuário
+      const token = localStorage.getItem("token");
+      await axios.put(`http://localhost:5000/usuario/${formUsuario.value.id_firebase}`, {
+        nome: formUsuario.value.nome,
+        email: formUsuario.value.email
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      alert("Usuário atualizado com sucesso!");
+    } else {
+      // Criar novo usuário
+      await axios.post("http://localhost:5000/usuarios", {
+        nome: formUsuario.value.nome,
+        email: formUsuario.value.email,
+        senha: formUsuario.value.senha,
+        data_nascimento: formUsuario.value.data_nascimento
+      });
+      alert("Usuário cadastrado com sucesso!");
+    }
+    fecharModal();
+    await carregarUsuarios(); // Recarrega a lista
+  } catch (e) {
+    erro.value = e.response?.data?.error || e.message;
+    alert("Erro ao salvar: " + erro.value);
+  }
+};
+
+const fecharModal = () => {
+  modalAberto.value = false;
+  editando.value = false;
+  formUsuario.value = {
+    id: null,
+    id_firebase: null,
+    nome: "",
+    email: "",
+    senha: "",
+    data_nascimento: ""
+  };
+};
+
+// Lifecycle
+onMounted(() => {
+  carregarUsuarios();
+});
 </script>
 
 <style scoped>
@@ -189,9 +284,24 @@ h1 {
   border-color: #4fc08d;
 }
 
+.btn-novo {
+  background: #4fc08d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.btn-novo:hover {
+  background: #3da87a;
+}
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 1.5rem;
 }
 
@@ -204,10 +314,9 @@ h1 {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
   border-top: 4px solid #4fc08d;
+  position: relative;
 }
 
 .cracha:hover {
@@ -272,6 +381,41 @@ h1 {
   border-radius: 20px;
 }
 
+.acoes {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.btn-editar, .btn-deletar {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.btn-editar:hover {
+  background: #e8f8f2;
+}
+
+.btn-deletar:hover {
+  background: #fdecea;
+}
+
+.btn-editar span, .btn-deletar span {
+  font-size: 20px;
+}
+
+.btn-editar span {
+  color: #4fc08d;
+}
+
+.btn-deletar span {
+  color: #e74c3c;
+}
+
 .carregando {
   text-align: center;
   color: #4fc08d;
@@ -294,5 +438,76 @@ h1 {
   border-radius: 8px;
   margin-top: 1rem;
   font-size: 1rem;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+}
+
+.modal-content h2 {
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.modal-acoes {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.modal-acoes button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.modal-acoes button:first-child {
+  background: #e74c3c;
+  color: white;
+}
+
+.modal-acoes button:last-child {
+  background: #4fc08d;
+  color: white;
 }
 </style>

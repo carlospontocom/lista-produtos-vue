@@ -23,7 +23,7 @@
       <span>{{ item.emoji }} {{ item.label }}</span>
     </li>
   </ul>
-        </div>
+       
       </div>
 
       <div class="hero-right">
@@ -141,7 +141,6 @@ const perfil = {
     { nome: 'Firebase', cor: '#f5820d' },
     { nome: 'MySQL (TiDB)', cor: '#00758f' }
   ],
- 
   formacao: [
     { curso: 'Pós-graduado em FRONT END', instituicao: 'Web com Vue.js e React.js', atual: true },
     { curso: 'Graduação em Administração', instituicao: '', atual: false }
@@ -186,8 +185,7 @@ const menuItems = [
   { emoji: '🛒', label: 'E-commerce' },
 ]
 
-
- const projetos = [
+const projetos = [
   {
     nome: 'Agendamento Online',
     icon: '📅',
