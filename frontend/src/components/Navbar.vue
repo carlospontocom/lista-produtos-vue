@@ -18,7 +18,16 @@
           <router-link to="/" active-class="active-link">Home</router-link>
         </li>
         <li>
-          <router-link to="/usuarios" active-class="active-link">Usuários</router-link>
+          <router-link to="/landing" active-class="active-link">Landing</router-link>
+        </li>
+        <li>
+          <router-link to="/login" active-class="active-link">Login</router-link>
+        </li>
+        <li>
+          <router-link to="/cadastro" active-class="active-link">Cadastro</router-link>
+        </li>
+        <li>
+          <router-link to="/usuarios" active-class="active-link">Todos usuários</router-link>
         </li>
       </ul>
     </div>

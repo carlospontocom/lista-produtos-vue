@@ -1,9 +1,8 @@
   <template>
    
    <Navbar />
-   <router-view/>
-    
-    <!-- <MiniCrud /> -->
+    <router-view :key="$route.fullPath" />
+
 
 </template>
 
