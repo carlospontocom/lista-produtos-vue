@@ -16,10 +16,20 @@
             {{ tag.nome }}
           </span>
         </div>
+<<<<<<< HEAD
         <div class="botoes__hero">
         <h3>Possibilidades::</h3>
           <a :href="perfil.links.projetos" class="btn-primary">🚀 Ver Projetos</a>
           <a :href="perfil.links.contato" class="btn-secondary">💼 Vamos Trabalhar Juntos</a>
+=======
+        <div class="container-possibilidades">
+        <h3>::Possibilidades::</h3>
+        <ul>
+    <li v-for="item in menuItems" :key="item.label" class="items-emoticons">
+      <span>{{ item.emoji }} {{ item.label }}</span>
+    </li>
+  </ul>
+>>>>>>> feature/hero
         </div>
       </div>
 
@@ -138,10 +148,14 @@ const perfil = {
     { nome: 'Firebase', cor: '#f5820d' },
     { nome: 'MySQL (TiDB)', cor: '#00758f' }
   ],
+<<<<<<< HEAD
   links: {
     projetos: '#projetos',
     contato: '#contato'
   },
+=======
+ 
+>>>>>>> feature/hero
   formacao: [
     { curso: 'Pós-graduado em FRONT END', instituicao: 'Web com Vue.js e React.js', atual: true },
     { curso: 'Graduação em Administração', instituicao: '', atual: false }
@@ -178,8 +192,21 @@ const perfil = {
     { nome: 'Netlify', icon: '☁️' }
   ]
 }
+<<<<<<< HEAD
 // parei aqui -- apagar -- continuar
 const projetos = [
+=======
+
+const menuItems = [
+  { emoji: '🚀', label: 'Projetos' },
+  { emoji: '🌐', label: 'Sites' },
+  { emoji: '🖥️', label: 'Sistemas' },
+  { emoji: '🛒', label: 'E-commerce' },
+]
+
+
+ const projetos = [
+>>>>>>> feature/hero
   {
     nome: 'Agendamento Online',
     icon: '📅',
