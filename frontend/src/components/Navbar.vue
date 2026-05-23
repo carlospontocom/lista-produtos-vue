@@ -3,7 +3,7 @@
     <div class="navbar-container">
       <router-link to="/" class="logo">
         <span class="material-symbols-outlined logo-icon">blur_on</span>
-        <span class="logo-text">MeuApp</span>
+        <span class="logo-text">VueJS</span>
       </router-link>
 
       <input type="checkbox" id="menu-toggle" class="menu-toggle" />
@@ -17,9 +17,7 @@
         <li>
           <router-link to="/" active-class="active-link">Home</router-link>
         </li>
-        <li>
-          <router-link to="/landing" active-class="active-link">Landing</router-link>
-        </li>
+        
         <li>
           <router-link to="/login" active-class="active-link">Login</router-link>
         </li>
@@ -27,7 +25,7 @@
           <router-link to="/cadastro" active-class="active-link">Cadastro</router-link>
         </li>
         <li>
-          <router-link to="/usuarios" active-class="active-link">Todos usuários</router-link>
+          <router-link to="/listaUsuarios" active-class="active-link">Contatos</router-link>
         </li>
       </ul>
     </div>

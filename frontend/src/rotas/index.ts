@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import type {RouteRecordRaw} from 'vue-router';
 import HomeView from '../views/HomeView.vue';
-import UsuariosView from '../views/UsuariosView.vue';
+import ListaUsuariosView   from '../views/ListaUsuariosView.vue';
 import LoginView from '../views/LoginView.vue';
 import CadastroView from '../views/CadastroView.vue';
 import LandingVieww from '../views/LandingVieww.vue';
@@ -13,9 +13,9 @@ const routes: Array<RouteRecordRaw> = [
     component: HomeView
   },
   {
-    path: '/usuarios',
-    name: 'todosUsuarios',
-    component: UsuariosView
+    path: '/listaUsuarios',
+    name: 'listaUsuarios',
+    component: ListaUsuariosView
   },
   {
     path: '/landing',
