@@ -33,3 +33,17 @@ node_modules/
 # Firebase
 backend/config/firebase-keys.json
 frontend/src/firebase/firebase.js
+
+.env
+.env.local
+.env.production
+backend/config/*.json
+
+echo "" >> .gitignore
+echo "# Variaveis de ambiente" >> .gitignore
+echo ".env" >> .gitignore
+echo ".env.local" >> .gitignore
+echo ".env.production" >> .gitignore
+echo "" >> .gitignore
+echo "# Credenciais Firebase" >> .gitignore
+echo "backend/config/*.json" >> .gitignore
