@@ -42,14 +42,14 @@ h3 {
 
 .projetos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(295px, 1fr));
   gap: 20px;
 }
 
 .card{
     background: white;
-    border: 2px solid #f2f2f2;
-    border-radius: 10px;
+    border: 1px solid #f2f2f2;
+    border-radius: 12px;
     display: flex;
     justify-content: center;
 }
