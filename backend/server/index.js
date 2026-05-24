@@ -101,7 +101,7 @@ app.put("/usuario/:uid", checarAutenticacao, async (req, res) => {
 });
 
 // Deletar Usuário (Protegido)
-app.delete("/usuario/:uid", checarAutenticacao, async (req, res) => {
+app.delete("/usuario/:uid", async (req, res) => {
   try {
     const { uid } = req.params;
     await UsuarioModel.deletarUsuario(uid);
