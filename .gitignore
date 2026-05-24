@@ -36,7 +36,7 @@ frontend/src/firebase/firebase.js
 
 .env
 .env.local
-.env.production
+!.env.production
 backend/config/*.json
 
 echo "" >> .gitignore
