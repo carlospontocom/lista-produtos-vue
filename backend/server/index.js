@@ -5,7 +5,7 @@ import UsuarioModel from "../models/usuarioModel.js";
 import admin from "../config/firebaseAdmin.js";
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 // No seu server.js, o CORS deve estar assim:
 const allowedOrigins = [
@@ -147,7 +147,7 @@ app.put("/usuarios/:id", async (req, res) => {
 
 
 // Iniciar servidor
-app.listen(port, () => {
+app.listen(port, "0.0.0.0",() => {
   console.log(`✅ Servidor rodando em http://localhost:${port}`);
   console.log(`📡 Teste a rota GET: http://localhost:${port}`);
 
