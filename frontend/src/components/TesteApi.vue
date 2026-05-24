@@ -37,7 +37,7 @@
         <div class="detalhes">
           <p><span>🎂</span> {{ formatarData(usuario.data_nascimento) }}</p>
         </div>
-        <div class="badge">ID #{{ usuario.id }}</div>
+        <div class="badge">ID #{{ usuario.id_firebase }}</div>
         <div class="acoes">
           <button class="btn-editar" @click="editarUsuario(usuario)">
             <span class="material-symbols-outlined">edit</span>
