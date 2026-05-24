@@ -131,7 +131,7 @@ const carregarUsuarios = async () => {
   carregando.value = true;
   erro.value = null;
   try {
-    const response = await axios.get("http://localhost:5000/usuarios");
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/usuarios`);
     usuarios.value = response.data;
   } catch (error) {
     erro.value = error.message;
@@ -146,7 +146,8 @@ const deletarUsuario = async (uid) => {
   
   try {
     const token = localStorage.getItem("token"); // Pega o token do Firebase
-    const response = await axios.delete(`http://localhost:5000/usuario/${uid}`, {
+    const response = await axios.delete(`${import.meta.env.VITE_API_URL}/usuarios/${uid}`, {
+      // `${import.meta.env.VITE_API_URL}/usuarios/${uid}`
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -192,7 +193,9 @@ const salvarUsuario = async () => {
     if (editando.value) {
       // Atualizar usuário
       const token = localStorage.getItem("token");
-      await axios.put(`http://localhost:5000/usuario/${formUsuario.value.id_firebase}`, {
+      await axios.put(`${import.meta.env.VITE_API_URL}/usuarios/${formUsuario.value.id_firebase}`, {
+        // `${import.meta.env.VITE_API_URL}/usuarios/${formUsuario.value.id_firebase}`
+        // `${import.meta.env.VITE_API_URL}/usuarios`
         nome: formUsuario.value.nome,
         email: formUsuario.value.email
       }, {
@@ -203,7 +206,7 @@ const salvarUsuario = async () => {
       alert("Usuário atualizado com sucesso!");
     } else {
       // Criar novo usuário
-      await axios.post("http://localhost:5000/usuarios", {
+      await axios.post(`${import.meta.env.VITE_API_URL}/usuarios`, {
         nome: formUsuario.value.nome,
         email: formUsuario.value.email,
         senha: formUsuario.value.senha,

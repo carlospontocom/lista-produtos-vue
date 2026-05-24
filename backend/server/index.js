@@ -93,5 +93,4 @@ app.delete("/usuario/:uid", checarAutenticacao, async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Aplicação rodando em http://localhost:${port}`);
-  console.log(`Documentação Swagger disponível em http://localhost:${port}/api-docs`);
 });
