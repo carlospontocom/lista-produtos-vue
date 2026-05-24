@@ -92,11 +92,13 @@ export default {
   flex-direction: column;
 }
 .form-group label {
-  margin-bottom: 5px;
-  font-weight: bold;
+  color:#00000080;
+  font-weight: normal;
+  font-size:12px;
+  margin: .5rem 0 0 0;
 }
 .form-group input {
-  padding: 8px;
+  padding: 14px 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
