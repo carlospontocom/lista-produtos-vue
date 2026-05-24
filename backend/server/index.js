@@ -2,17 +2,36 @@ import express from "express";
 import cors from "cors";
 import UsuarioModel from "../models/usuarioModel.js";
 import admin from "../config/firebaseAdmin.js";
- 
+
 const app = express();
 const port = process.env.PORT || 5000;
 
+// ==========================================
+// CONFIGURAÇÃO DO CORS REFORÇADA
+// ==========================================
+const allowedOrigins = [
+  'http://localhost:5173', // Para seus testes locais
+  process.env.FRONTEND_URL // URL da Vercel vinda das variáveis de ambiente
+].filter(Boolean); // Remove valores indefinidos caso a variável não esteja setada
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173'
+  origin: function (origin, callback) {
+    // Permite requisições sem origem (como ferramentas de teste, Postman, ou o próprio Swagger local)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Bloqueado pelo CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
+
 app.use(express.json());
 
-
-// Rota para o JSON da documentação
+// Rota para o JSON da documentação 
+// (Nota: certifique-se de que a variável 'swaggerSpec' esteja importada ou definida no seu arquivo)
 app.get('/api-docs.json', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
@@ -37,7 +56,11 @@ async function checarAutenticacao(req, res, next) {
   }
 }
 
+// ==========================================
+// ROTAS
+// ==========================================
 
+// IMPORTANTE: Se o cadastro precisa de usuário logado, adicione o middleware 'checarAutenticacao' aqui
 app.post("/usuarios", async (req, res) => {
   try {
     const usuario = req.body;
@@ -47,7 +70,7 @@ app.post("/usuarios", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
- 
+
 app.get("/usuarios", async (req, res) => {
   try {
     const usuarios = await UsuarioModel.listarUsuarios();
@@ -56,7 +79,7 @@ app.get("/usuarios", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
- 
+
 app.get("/usuario/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -69,7 +92,7 @@ app.get("/usuario/:id", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
- 
+
 app.put("/usuario/:uid", checarAutenticacao, async (req, res) => {
   try {
     const { uid } = req.params;
@@ -80,7 +103,7 @@ app.put("/usuario/:uid", checarAutenticacao, async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
- 
+
 app.delete("/usuario/:uid", checarAutenticacao, async (req, res) => {
   try {
     const { uid } = req.params;
@@ -92,5 +115,5 @@ app.delete("/usuario/:uid", checarAutenticacao, async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Aplicação rodando em http://localhost:${port}`);
+  console.log(`Aplicação rodando na porta ${port}`);
 });
