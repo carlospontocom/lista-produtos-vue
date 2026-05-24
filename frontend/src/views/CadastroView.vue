@@ -173,6 +173,7 @@ await axios.post(`https://lista-produtos-vue.onrender.com/usuarios`, {
   data_nascimento: form.value.data_nascimento,
   senha: form.value.senha
 })
+// vjamos mais
     sucesso.value = true
     limparFormulario()
   } catch (e) {
