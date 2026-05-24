@@ -34,7 +34,7 @@ app.get("/", (req, res) => {
 });
 
 
-// Rota novo usuario
+// Altere temporariamente no seu arquivo principal de rotas:
 app.post("/usuarios", async (req, res) => {
   try {
     const usuario = req.body;
@@ -43,10 +43,13 @@ app.post("/usuarios", async (req, res) => {
   }
   catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Erro interno do servidor" });
+    // Mudança aqui: vai enviar o texto exato do erro para o Axios mostrar na tela
+    res.status(500).json({ 
+      error: "Erro interno do servidor", 
+      detalhes: error.message 
+    });
   }
 });
-
 
 
 // Rota para listar usuários
