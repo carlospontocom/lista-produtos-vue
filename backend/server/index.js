@@ -1,8 +1,11 @@
 // 🔥 Use APENAS um estilo (ES modules - recomendado)
+import dontev from "dotenv";
+dontev.config();
+
 import express from "express";
+import admin from "../config/firebaseAdmin.js";
 import cors from "cors";  // ✅ Import correto
 import UsuarioModel from "../models/usuarioModel.js";
-import admin from "../config/firebaseAdmin.js";
 
 const app = express();
 const port = process.env.PORT || 5000;
