@@ -34,7 +34,7 @@ app.get("/", (req, res) => {
 });
 
 
-// Altere temporariamente no seu arquivo principal de rotas:
+// ATUALIZE APENAS A ROTA POST NO SEU ARQUIVO DE ROTAS:
 app.post("/usuarios", async (req, res) => {
   try {
     const usuario = req.body;
@@ -42,11 +42,14 @@ app.post("/usuarios", async (req, res) => {
     res.status(201).json(novoUsuario);
   }
   catch (error) {
-    console.error(error);
-    // Mudança aqui: vai enviar o texto exato do erro para o Axios mostrar na tela
+    // 1. Isso vai printar o erro detalhado nos logs do Render
+    console.error("Erro completo capturado na rota POST:", error);
+    
+    // 2. Isso vai enviar o texto exato do erro para o seu navegador ver no Console/Network
     res.status(500).json({ 
       error: "Erro interno do servidor", 
-      detalhes: error.message 
+      mensagemReal: error.message,
+      detalhes: error
     });
   }
 });
