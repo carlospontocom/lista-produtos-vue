@@ -157,7 +157,7 @@ const cadastrar = async () => {
 
   carregando.value = true
   try {
-    await axios.post('http://localhost:5000/usuarios', {
+    await axios.post(`${import.meta.env.VITE_API_URL}/usuarios`, {
       nome: form.value.nome,
       email: form.value.email,
       data_nascimento: form.value.data_nascimento,
