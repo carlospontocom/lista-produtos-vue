@@ -10,13 +10,13 @@ const port = process.env.PORT || 5000;
 // CONFIGURAÇÃO DO CORS REFORÇADA
 // ==========================================
 const allowedOrigins = [
-  'http://localhost:5173', // Para seus testes locais
-  process.env.FRONTEND_URL // URL da Vercel vinda das variáveis de ambiente
-].filter(Boolean); // Remove valores indefinidos caso a variável não esteja setada
+  'http://localhost:5173',   // Para seus testes locais no Vue
+  process.env.FRONTEND_URL   // URL da Vercel (configurada no painel do Render)
+].filter(Boolean);           // Remove valores vazios se a variável não estiver setada
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Permite requisições sem origem (como ferramentas de teste, Postman, ou o próprio Swagger local)
+    // Permite requisições sem origem (como Postman ou chamadas do mesmo servidor)
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
@@ -30,15 +30,8 @@ app.use(cors({
 
 app.use(express.json());
 
-// Rota para o JSON da documentação 
-// (Nota: certifique-se de que a variável 'swaggerSpec' esteja importada ou definida no seu arquivo)
-app.get('/api-docs.json', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.send(swaggerSpec);
-});
-
 // ==========================================
-// MIDDLEWARE DE PROTEÇÃO
+// MIDDLEWARE DE PROTEÇÃO (FIREBASE)
 // ==========================================
 async function checarAutenticacao(req, res, next) {
   const token = req.headers.authorization?.split("Bearer ")[1];
@@ -57,10 +50,10 @@ async function checarAutenticacao(req, res, next) {
 }
 
 // ==========================================
-// ROTAS
+// ROTAS DA API
 // ==========================================
 
-// IMPORTANTE: Se o cadastro precisa de usuário logado, adicione o middleware 'checarAutenticacao' aqui
+// Cadastro de Usuários
 app.post("/usuarios", async (req, res) => {
   try {
     const usuario = req.body;
@@ -71,6 +64,7 @@ app.post("/usuarios", async (req, res) => {
   }
 });
 
+// Listagem de Usuários
 app.get("/usuarios", async (req, res) => {
   try {
     const usuarios = await UsuarioModel.listarUsuarios();
@@ -80,6 +74,7 @@ app.get("/usuarios", async (req, res) => {
   }
 });
 
+// Buscar Usuário por ID
 app.get("/usuario/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -93,6 +88,7 @@ app.get("/usuario/:id", async (req, res) => {
   }
 });
 
+// Atualizar Usuário (Protegido)
 app.put("/usuario/:uid", checarAutenticacao, async (req, res) => {
   try {
     const { uid } = req.params;
@@ -104,6 +100,7 @@ app.put("/usuario/:uid", checarAutenticacao, async (req, res) => {
   }
 });
 
+// Deletar Usuário (Protegido)
 app.delete("/usuario/:uid", checarAutenticacao, async (req, res) => {
   try {
     const { uid } = req.params;
@@ -114,6 +111,9 @@ app.delete("/usuario/:uid", checarAutenticacao, async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Aplicação rodando na porta ${port}`);
+// ==========================================
+// INICIALIZAÇÃO DO SERVIDOR (IP 0.0.0.0 para Cloud)
+// ==========================================
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Servidor rodando com sucesso.`);
 });
