@@ -1,40 +1,29 @@
-// 🔥 Use APENAS um estilo (ES modules - recomendado)
-import dontev from "dotenv";
-dontev.config();
+// 🔥 Uso exclusivo de ES Modules (import/export)
+import dotenv from "dotenv";
+dotenv.config();
 
 import express from "express";
-import admin from "../config/firebaseAdmin.js";
-import cors from "cors";  // ✅ Import correto
+import cors from "cors";
 import UsuarioModel from "../models/usuarioModel.js";
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-// No seu server.js, o CORS deve estar assim:
-const allowedOrigins = [
-  'https://lista-produtos-vue.vercel.app',  // Frontend na Vercel
-  'https://lista-produtos-vue.onrender.com', // Próprio backend (opcional)
-  'http://localhost:5173'                   // Desenvolvimento local
-];
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true
-}));
+app.use(cors());
 
-// Middleware para JSON
+// Middleware obrigatório para o Express conseguir ler o corpo (JSON) das requisições POST/PUT
 app.use(express.json());
 
-// Rota de boas vindas
+// Rota de boas-vindas / Teste de funcionamento básico
 app.get("/", (req, res) => {
   res.json({ 
-    message: "Bem vindo à API! 🚀",
-    status: "Servidor rodando perfeitamente....."
+    message: "Bem-vindo à API! 🚀",
+    status: "Servidor Node.js + Express rodando perfeitamente e sem Firebase."
   });
 });
 
-
-// ATUALIZE APENAS A ROTA POST NO SEU ARQUIVO DE ROTAS:
+// Rota POST: Cadastrar novo usuário direto no TiDB Cloud
 app.post("/usuarios", async (req, res) => {
   try {
     const usuario = req.body;
@@ -42,64 +31,52 @@ app.post("/usuarios", async (req, res) => {
     res.status(201).json(novoUsuario);
   }
   catch (error) {
-    // 1. Isso vai printar o erro detalhado nos logs do Render
     console.error("Erro completo capturado na rota POST:", error);
-    
-    // 2. Isso vai enviar o texto exato do erro para o seu navegador ver no Console/Network
+    // Retorna a mensagem real gerada pelo banco para facilitar o diagnóstico no Front
     res.status(500).json({ 
-      error: "Erro interno do servidor", 
-      mensagemReal: error.message,
-      detalhes: error
+      error: "Erro interno do servidor ao cadastrar", 
+      mensagemReal: error.message 
     });
   }
 });
 
-
-// Rota para listar usuários
+// Rota GET: Listar todos os usuários salvos no TiDB Cloud
 app.get("/usuarios", async (req, res) => {
   try {
     const usuarios = await UsuarioModel.listarUsuarios();
     res.json(usuarios);
   }
   catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erro interno do servidor" });
+    console.error("Erro ao listar usuários:", error);
+    res.status(500).json({ error: "Erro interno do servidor ao listar" });
   }
 });
 
-
+// Rota DELETE: Excluir usuário usando o ID numérico tradicional do banco
 app.delete("/usuarios/:id", async (req, res) => {
   try {
     const id = req.params.id;
     
-    // Verifica se o ID foi fornecido
     if (!id) {
       return res.status(400).json({ error: "ID do usuário é obrigatório" });
     }
     
-    await UsuarioModel.deletarUsuario(id); // Note: seu model chama "deletarUsuario", não "excluirUsuario"
-    res.json({ message: "Usuário excluído com sucesso" });
+    await UsuarioModel.deletarUsuario(id);
+    res.json({ message: "Usuário excluído com sucesso do TiDB!" });
     
   } catch (error) {
     console.error("Erro ao excluir usuário:", error);
-    
-    // Tratamento de erros específicos
-    if (error.message.includes("not found") || error.message.includes("não encontrado")) {
-      return res.status(404).json({ error: "Usuário não encontrado" });
-    }
-    
     res.status(500).json({ error: "Erro interno do servidor ao excluir usuário" });
   }
 });
 
-
+// Rota PUT: Atualizar dados do usuário no TiDB Cloud através do ID numérico
 app.put("/usuarios/:id", async (req, res) => {
   try {
-    const firebaseUid = req.params.id;
+    const id = req.params.id;
     const dadosAtualizados = req.body;
     
-    // Validação básica
-    if (!firebaseUid) {
+    if (!id) {
       return res.status(400).json({ error: "ID do usuário é obrigatório" });
     }
     
@@ -109,55 +86,31 @@ app.put("/usuarios/:id", async (req, res) => {
       });
     }
     
-    console.log(`✏️ Atualizando usuário: ${firebaseUid}`, dadosAtualizados);
-    
-    // Preparar dados para o model
     const usuario = {
-      id_firebase: firebaseUid,
+      id: id,
       nome: dadosAtualizados.nome,
       email: dadosAtualizados.email
     };
     
     await UsuarioModel.atualizarUsuario(usuario);
     
-    console.log(`✅ Usuário ${firebaseUid} atualizado com sucesso`);
-    
     res.json({ 
       success: true,
-      message: "Usuário atualizado com sucesso",
-      uid: firebaseUid,
+      message: "Usuário atualizado com sucesso no TiDB!",
+      id: id,
       dadosAtualizados
     });
     
   } catch (error) {
-    console.error("❌ Erro ao atualizar usuário:", error);
-    
-    // Tratamento de erros específicos
-    if (error.code === 'auth/user-not-found') {
-      return res.status(404).json({ 
-        error: "Usuário não encontrado no Firebase" 
-      });
-    }
-    
-    if (error.code === 'auth/email-already-exists') {
-      return res.status(409).json({ 
-        error: "Este email já está em uso por outro usuário" 
-      });
-    }
-    
+    console.error("Erro ao atualizar usuário:", error);
     res.status(500).json({ 
       error: "Erro interno do servidor ao atualizar usuário",
       details: error.message 
     });
   }
 });
-    
 
-
-
-// Iniciar servidor
-app.listen(port, "0.0.0.0",() => {
-  console.log(`✅ Servidor rodando em http://localhost:${port}`);
-  console.log(`📡 Teste a rota GET: http://localhost:${port}`);
-
+// Iniciar o servidor Express escutando em todas as interfaces (necessário para o Render funcionar)
+app.listen(port, "0.0.0.0", () => {
+  console.log(`✅ Servidor rodando perfeitamente na porta ${port}`);
 });

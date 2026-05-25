@@ -1,4 +1,5 @@
 <template>
+  <section>
   <div class="container">
     <div class="card">
       <h1>Cadastrar Usuário</h1>
@@ -67,8 +68,8 @@
         <span class="msg-erro" v-if="erros.confirmarSenha">{{ erros.confirmarSenha }}</span>
       </div>
 
-      <div class="msg-sucesso" v-if="sucesso" style="color: green;">
-        ✅ Usuário cadastrado com sucesso!
+      <div class="msg-sucesso" v-if="sucesso" style="color: green; background: #eafaf1; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+        ✅ Usuário cadastrado com sucesso no banco de dados!
       </div>
 
       <button @click="cadastrar" :disabled="carregando">
@@ -76,6 +77,7 @@
       </button>
     </div>
   </div>
+  </section>
 </template>
 
 <script setup>
@@ -84,7 +86,7 @@ import axios from 'axios';
 
 const carregando = ref(false);
 const sucesso = ref(false);
-const erroServidor = ref(''); // Armazena o erro real do back-end
+const erroServidor = ref('');
 
 const form = ref({
   nome: '',
@@ -166,27 +168,47 @@ const cadastrar = async () => {
 
   carregando.value = true
   try {
-   // Substitua a linha do axios.post por essa (com a sua URL real):
-await axios.post(`https://lista-produtos-vue.onrender.com/usuarios`, {
-  nome: form.value.nome,
-  email: form.value.email,
-  data_nascimento: form.value.data_nascimento,
-  senha: form.value.senha
-})
-// vjamos mais
+    // Faz a chamada direta para a sua rota de Express no Render
+    await axios.post(`${import.meta.env.VITE_API_URL}/usuarios`, {
+      nome: form.value.nome,
+      email: form.value.email,
+      data_nascimento: form.value.data_nascimento,
+      senha: form.value.senha
+    })
+    
     sucesso.value = true
     limparFormulario()
   } catch (e) {
-    // Captura a resposta detalhada criada na rota POST do Express
+    // Captura a resposta detalhada (mensagemReal) criada no seu arquivo de rotas Node.js
     if (e.response && e.response.data) {
       const data = e.response.data;
       erroServidor.value = data.mensagemReal || data.error || JSON.stringify(data);
     } else {
-      erroServidor.value = `Não foi possível conectar ao servidor: ${e.message}`;
+      erroServidor.value = `Não foi possível conectar à API Node.js: ${e.message}`;
     }
-    console.error("Log completo do erro:", e.response?.data || e);
+    console.error("Log completo do erro no Axios:", e.response?.data || e);
   } finally {
     carregando.value = false
   }
 };
 </script>
+
+<style scoped="">
+
+.container{
+  padding:1rem;
+}
+
+label{
+  color:#00000050;
+  font-size:12px;
+  display:block;
+  margin:.6rem 0 0 0;
+}
+.msg-erro{
+  color:red;
+  font-size: 12px;
+  display:block;
+  margin-bottom:.6rem;
+}
+</style>
